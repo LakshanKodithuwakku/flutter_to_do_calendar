@@ -16,11 +16,13 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDate;
+  TimeOfDay? _startTime;
+  TimeOfDay? _endTime;
 
-  Map<String, List> mySelectedEvents = {};
+  List<Event> mySelectedEvents = [];
 
   final titleController = TextEditingController();
-  final descpController = TextEditingController();
+  final noteController = TextEditingController();
 
   @override
   void initState() {
@@ -41,17 +43,17 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
     String? eventsJson = prefs.getString('mySelectedEvents');
     if (eventsJson != null) {
       setState(() {
-        mySelectedEvents = Map<String, List>.from(json.decode(eventsJson));
+        mySelectedEvents = (json.decode(eventsJson) as List)
+            .map((event) => Event.fromJson(event))
+            .toList();
       });
     }
   }
 
-  List _listOfDayEvents(DateTime dateTime) {
-    if (mySelectedEvents[DateFormat('yyyy-MM-dd').format(dateTime)] != null) {
-      return mySelectedEvents[DateFormat('yyyy-MM-dd').format(dateTime)]!;
-    } else {
-      return [];
-    }
+  List<Event> _listOfDayEvents(DateTime dateTime) {
+    return mySelectedEvents
+        .where((event) => isSameDay(event.date, dateTime))
+        .toList();
   }
 
   var holidays = [
@@ -84,11 +86,60 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
                 labelText: 'Title',
               ),
             ),
+            // Date Picker
+            ElevatedButton(
+              onPressed: () async {
+                DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2022),
+                  lastDate: DateTime(2024),
+                );
+                if (pickedDate != null) {
+                  setState(() {
+                    _selectedDate = pickedDate;
+                  });
+                }
+              },
+              child: Text(
+                "Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}",
+              ),
+            ),
+            // Start Time Picker
+            ElevatedButton(
+              onPressed: () async {
+                TimeOfDay? startTime = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+                if (startTime != null) {
+                  setState(() {
+                    _startTime = startTime;
+                  });
+                }
+              },
+              child: Text("Start Time: ${_startTime?.format(context) ?? ''}"),
+            ),
+            // End Time Picker
+            ElevatedButton(
+              onPressed: () async {
+                TimeOfDay? endTime = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+                if (endTime != null) {
+                  setState(() {
+                    _endTime = endTime;
+                  });
+                }
+              },
+              child: Text("End Time: ${_endTime?.format(context) ?? ''}"),
+            ),
             TextField(
-              controller: descpController,
-              textCapitalization: TextCapitalization.words,
+              controller: noteController,
+              textCapitalization: TextCapitalization.sentences,
               decoration: const InputDecoration(
-                labelText: 'Description',
+                labelText: 'Note',
               ),
             ),
           ],
@@ -100,35 +151,30 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
           ),
           TextButton(
             onPressed: () {
-              if (titleController.text.isEmpty && descpController.text.isEmpty) {
+              if (titleController.text.isEmpty ||
+                  _selectedDate == null ||
+                  _startTime == null ||
+                  _endTime == null ||
+                  noteController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Required title and description'),
+                    content: Text('Please fill in all fields.'),
                     duration: Duration(seconds: 2),
                   ),
                 );
                 return;
               } else {
                 setState(() {
-                  if (mySelectedEvents[DateFormat('yyyy-MM-dd').format(_selectedDate!)] !=
-                      null) {
-                    mySelectedEvents[DateFormat('yyyy-MM-dd').format(_selectedDate!)]?.add({
-                      "eventTitle": titleController.text,
-                      "eventDescp": descpController.text,
-                    });
-                  } else {
-                    mySelectedEvents[DateFormat('yyyy-MM-dd').format(_selectedDate!)] = [
-                      {
-                        "eventTitle": titleController.text,
-                        "eventDescp": descpController.text,
-                      }
-                    ];
-                  }
+                  mySelectedEvents.add(Event(
+                    title: titleController.text,
+                    date: _selectedDate!,
+                    startTime: _startTime!,
+                    endTime: _endTime!,
+                    note: noteController.text,
+                  ));
                 });
-                print("New Event for backend developer ${json.encode(mySelectedEvents)}");
                 titleController.clear();
-                descpController.clear();
-
+                noteController.clear();
                 // Save events to shared preferences
                 saveEventsToSharedPreferences();
 
@@ -186,16 +232,24 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
               },
               weekendDays: const [DateTime.saturday, DateTime.sunday],
             ),
-            ..._listOfDayEvents(_selectedDate!).map((myEvents) => ListTile(
+            ..._listOfDayEvents(_selectedDate!).map((event) => ListTile(
               leading: const Icon(
                 Icons.done,
                 color: Colors.teal,
               ),
               title: Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text('Event Title: ${myEvents['eventTitle']}'),
+                child: Text('Event Title: ${event.title}'),
               ),
-              subtitle: Text('Description: ${myEvents['eventDescp']}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Date: ${DateFormat('yyyy-MM-dd').format(event.date)}'),
+                  Text('Start Time: ${event.startTime.format(context)}'),
+                  Text('End Time: ${event.endTime.format(context)}'),
+                  Text('Note: ${event.note}'),
+                ],
+              ),
             ))
           ],
         ),
@@ -205,5 +259,41 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
         label: const Text('Add Event'),
       ),
     );
+  }
+}
+
+class Event {
+  final String title;
+  final DateTime date;
+  final TimeOfDay startTime;
+  final TimeOfDay endTime;
+  final String note;
+
+  Event({
+    required this.title,
+    required this.date,
+    required this.startTime,
+    required this.endTime,
+    required this.note,
+  });
+
+  factory Event.fromJson(Map<String, dynamic> json) {
+    return Event(
+      title: json['title'],
+      date: DateTime.parse(json['date']),
+      startTime: TimeOfDay.fromDateTime(DateTime.parse(json['startTime'])),
+      endTime: TimeOfDay.fromDateTime(DateTime.parse(json['endTime'])),
+      note: json['note'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'date': date.toIso8601String(),
+      'startTime': DateTime(DateTime.now().year, DateTime.now().month, date.day, startTime.hour, startTime.minute).toIso8601String(),
+      'endTime': DateTime(DateTime.now().year, DateTime.now().month, date.day, endTime.hour, endTime.minute).toIso8601String(),
+      'note': note,
+    };
   }
 }

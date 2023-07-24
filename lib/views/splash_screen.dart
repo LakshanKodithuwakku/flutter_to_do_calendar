@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Text(
               "Event Calender",
               style: TextStyle(
-                  color: textBlack, fontSize: 30, fontWeight: FontWeight.bold),
+                  color: primaryColor, fontSize: 30, fontWeight: FontWeight.bold),
             ),
           ),
         ],

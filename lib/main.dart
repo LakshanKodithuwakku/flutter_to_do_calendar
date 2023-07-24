@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:untitled/views/event_calender.dart';
 import 'package:untitled/views/splash_screen.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
