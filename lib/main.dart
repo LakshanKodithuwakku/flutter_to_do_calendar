@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/views/event_calender.dart';
 import 'package:untitled/views/splash_screen.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 
 void main() {
+  AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic notifications',
+        channelDescription: 'hi'
+      ),
+    ],
+    debug: true
+  );
   runApp(const MyApp());
 }
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +27,11 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
 
   @override
   void initState() {
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed){
+      if(!isAllowed){
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
     super.initState();
     _selectedDate = _focusedDay;
 
@@ -33,6 +39,12 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
     loadPreviousEvents();
   }
 
+  triggerNotification(){
+    AwesomeNotifications().createNotification(content: NotificationContent(id: 10, channelKey: 'basic_channel',
+    title: 'Simple Notification',
+    body: 'hi'));
+  }
+  
   void saveEventsToSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('mySelectedEvents', json.encode(mySelectedEvents));
@@ -250,7 +262,8 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
                   Text('Note: ${event.note}'),
                 ],
               ),
-            ))
+            )),
+            ElevatedButton(onPressed: triggerNotification, child: Text("Click"))
           ],
         ),
       ),
