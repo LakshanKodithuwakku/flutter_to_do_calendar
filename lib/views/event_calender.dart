@@ -30,14 +30,14 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
     loadPreviousEvents();
   }
 
-  loadPreviousEvents(){
+  loadPreviousEvents() {
     print("object");
     setState(() {
       mySelectedEvents = {
-        "2023-07-13":[
+        "2023-07-13": [
           {"eventDescp": "11", "eventTitle": "111"}
         ],
-        "2023-07-10":[
+        "2023-07-10": [
           {"eventDescp": "11", "eventTitle": "111"},
           {"eventDescp": "22", "eventTitle": "222"}
         ]
@@ -45,6 +45,7 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
     });
     print(mySelectedEvents);
   }
+
   List _listOfDayEvents(DateTime dateTime) {
     if (mySelectedEvents[DateFormat('yyyy-MM-dd').format(dateTime)] != null) {
       return mySelectedEvents[DateFormat('yyyy-MM-dd').format(dateTime)]!;
@@ -52,6 +53,12 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
       return [];
     }
   }
+
+  var holidays = [DateTime.utc(2023, 03, 02), DateTime.utc(2023, 04, 05),DateTime.utc(2023, 05, 08),DateTime.utc(2023, 06, 12),
+    DateTime.utc(2023, 07, 12),
+    DateTime.utc(2023, 08, 20),
+    DateTime.utc(2023, 09, 25),
+    DateTime.utc(2023, 10, 15)];
 
   _showAddEventDialog() async {
     await showDialog(
@@ -101,17 +108,17 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
 
                       setState(() {
                         if (mySelectedEvents[DateFormat('yyyy-MM-dd')
-                            .format(_selectedDate!)] !=
+                                .format(_selectedDate!)] !=
                             null) {
-                          mySelectedEvents[
-                          DateFormat('yyyy-MM-dd').format(_selectedDate!)]
+                          mySelectedEvents[DateFormat('yyyy-MM-dd')
+                                  .format(_selectedDate!)]
                               ?.add({
                             "eventTitle": titleController.text,
                             "eventDescp": descpController.text,
                           });
                         } else {
-                          mySelectedEvents[
-                          DateFormat('yyyy-MM-dd').format(_selectedDate!)] = [
+                          mySelectedEvents[DateFormat('yyyy-MM-dd')
+                              .format(_selectedDate!)] = [
                             {
                               "eventTitle": titleController.text,
                               "eventDescp": descpController.text,
@@ -169,11 +176,12 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
               onPageChanged: (focusedDay) {
                 _focusedDay = focusedDay;
               },
-              eventLoader: _listOfDayEvents,holidayPredicate: (day) {
+              eventLoader: _listOfDayEvents,
+              holidayPredicate: (day) {
                 print(day.weekday);
-                var importantDays = [DateTime.utc(2023, 07, 02), DateTime.utc(2023, 07, 05)];
-              return importantDays.contains(day);//day == DateTime.utc(2023, 07, 02) || day == DateTime.utc(2023, 07, 05);
+                return holidays.contains(day);
               },
+              weekendDays: const [DateTime.saturday, DateTime.sunday],
             ),
             ..._listOfDayEvents(_selectedDate!).map((myEvents) => ListTile(
                   leading: const Icon(
@@ -182,7 +190,7 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
                   ),
                   title: Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Text('Event Title: ${myEvents['e ventTitle']}'),
+                    child: Text('Event Title: ${myEvents['eventTitle']}'),
                   ),
                   subtitle: Text('Description: ${myEvents['eventDescp']}'),
                 ))

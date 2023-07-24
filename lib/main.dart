@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/views/event_calender.dart';
+import 'package:untitled/views/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: EventCalenderScreen(),
+      home: SplashScreen(),
     );
   }
 }
