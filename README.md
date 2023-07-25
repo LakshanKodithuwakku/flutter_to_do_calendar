@@ -28,6 +28,4 @@ To run the app locally, follow these steps:
    ```
 ---
 
-Remember to replace "your-username" with your actual GitHub username in the clone URL. Also, make sure to include screenshots of your app in the "screenshots" directory to showcase its appearance.
-
 Good luck with your Event Calendar app! If you have any questions or need further assistance, feel free to ask. Happy coding!
