@@ -13,7 +13,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
-    return AnimatedSplashScreen(
+    return AnimatedSplashScreen(backgroundColor: backgroundColor,
       splash: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Text(
               "Event Calender",
               style: TextStyle(
-                  color: primaryColor, fontSize: 30, fontWeight: FontWeight.bold),
+                  color: textBlack, fontSize: 30, fontWeight: FontWeight.bold),
             ),
           ),
         ],

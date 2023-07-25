@@ -37,6 +37,14 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
 
     // Load events from shared preferences
     loadPreviousEvents();
+    runNotification;
+  }
+
+  runNotification(){
+    print(DateTime.now());
+    while(DateTime.now() == 1){
+      print(DateTime.now());
+    }
   }
 
   triggerNotification(){
@@ -44,7 +52,7 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
     title: 'Simple Notification',
     body: 'hi'));
   }
-  
+
   void saveEventsToSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('mySelectedEvents', json.encode(mySelectedEvents));
@@ -263,7 +271,7 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
                 ],
               ),
             )),
-            ElevatedButton(onPressed: triggerNotification, child: Text("Click"))
+            ElevatedButton(onPressed: (){ triggerNotification();print(DateTime.now());}, child: Text("Click"))
           ],
         ),
       ),

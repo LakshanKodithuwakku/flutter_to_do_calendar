@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="untitled"
+        android:label="To_Do_Calender"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -16,7 +16,8 @@
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
+              android:name="flutterEmbedding"
+                android:value="2"
               android:resource="@style/NormalTheme"
               />
             <intent-filter>
