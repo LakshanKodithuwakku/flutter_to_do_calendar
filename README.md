@@ -1,5 +1,8 @@
 ## Event Calendar App - Flutter
 
+Name: Lakshan Kodithuwakku
+Time taken: 12h
+
 ### Features:
 - Splash Screen: A captivating splash screen for a great first impression.
 - Calendar View: A monthly calendar displaying all the events and holidays.
