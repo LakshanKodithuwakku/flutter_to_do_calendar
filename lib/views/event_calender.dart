@@ -47,10 +47,10 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
     }
   }
 
-  triggerNotification(){
+  triggerNotification(String title, String body){
     AwesomeNotifications().createNotification(content: NotificationContent(id: 10, channelKey: 'basic_channel',
-    title: 'Simple Notification',
-    body: 'hi'));
+    title: title,
+    body: body));
   }
 
   void saveEventsToSharedPreferences() async {
@@ -193,6 +193,7 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
                     note: noteController.text,
                   ));
                 });
+                triggerNotification("Add New Event", titleController.text);
                 titleController.clear();
                 noteController.clear();
                 // Save events to shared preferences
@@ -247,7 +248,6 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
               },
               eventLoader: _listOfDayEvents,
               holidayPredicate: (day) {
-                print(day.weekday);
                 return holidays.contains(day);
               },
               weekendDays: const [DateTime.saturday, DateTime.sunday],
@@ -271,7 +271,6 @@ class _EventCalenderScreenState extends State<EventCalenderScreen> {
                 ],
               ),
             )),
-            ElevatedButton(onPressed: (){ triggerNotification();print(DateTime.now());}, child: Text("Click"))
           ],
         ),
       ),
